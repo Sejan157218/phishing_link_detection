@@ -30,7 +30,31 @@ class DataIngestion:
 
             df['is_phishing'] = df['status'].apply(lambda x: 1 if x=='legitimate' else 0)
 
-            selectedFeatures = ['url','length_url', 'nb_subdomains', 'ratio_digits_url', 'prefix_suffix', 'suspecious_tld', 'https_token', 'nb_dots','random_domain','domain_age', 'whois_registered_domain', 'is_phishing']
+            selectedFeatures = ['url',
+                                'length_url',
+                                'length_hostname',
+                                'ip',
+                                'nb_dots',
+                                'nb_qm',
+                                'nb_eq',
+                                'nb_slash',
+                                'nb_www',
+                                'ratio_digits_url',
+                                'ratio_digits_host',
+                                'tld_in_subdomain',
+                                'prefix_suffix',
+                                'shortest_word_host',
+                                'longest_words_raw',
+                                'longest_word_path',
+                                'phish_hints',
+                                'nb_hyperlinks',
+                                'ratio_intHyperlinks',
+                                'empty_title',
+                                'domain_in_title',
+                                'domain_age',
+                                'google_index',
+                                'page_rank',
+                                'is_phishing']
 
             df = df.loc[:, selectedFeatures]
 
