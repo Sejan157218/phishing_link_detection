@@ -14,26 +14,28 @@ import time
 from googlesearch import search
 import requests
 from urllib.parse import urlparse, urljoin
+from .create_data_for_predict import extract_features
+
 
 class PredictPipeline:
     def __init__(self):
         pass
 
     def predict(self,features):
-        try:
-            model_path=os.path.join("archive","K_model.pkl")
-            preprocessor_path=os.path.join('archive','preprocessor.pkl')
-            print("Before Loading")
-            model=load_object(file_path=model_path)
-            preprocessor=load_object(file_path=preprocessor_path)
-            print("After Loading")
-            data_scaled=preprocessor.transform(features)
-            preds=model.predict(data_scaled)
-            print("preds", preds)
-            return preds[0]
+    # try:
+        model_path=os.path.join("archive","S_model.pkl")
+        preprocessor_path=os.path.join('archive','preprocessor.pkl')
+        print("Before Loading")
+        model=load_object(file_path=model_path)
+        preprocessor=load_object(file_path=preprocessor_path)
+        print("After Loading")
+        data_scaled=preprocessor.transform(features)
+        preds=model.predict(data_scaled)
+        print("preds", preds)
+        return preds[0]
         
-        except Exception as e:
-            raise CustomException(e,sys)
+        # except Exception as e:
+        #     raise CustomException(e,sys)
 
 #_______data_____#
 
@@ -191,17 +193,17 @@ def google_index(url):
 #               DNSRecord  expiration length
 #################################################################################################################################
 
-import dns.resolver
+# import dns.resolver
 
-def dns_record(domain):
-    try:
-        nameservers = dns.resolver.query(domain,'NS')
-        if len(nameservers)>0:
-            return 0
-        else:
-            return 1
-    except:
-        return 1
+# def dns_record(domain):
+#     try:
+#         nameservers = dns.resolver.query(domain,'NS')
+#         if len(nameservers)>0:
+#             return 0
+#         else:
+#             return 1
+#     except:
+#         return 1
 
 #################################################################################################################################
 #               Page Rank from OPR
@@ -308,55 +310,55 @@ class CustomData:
 
     def get_data_as_data_frame(self, url):
         try:
-            # Parsed URL
-            parsed_url = urlparse(url if url.startswith("http") else "http://" + url)
+            # # Parsed URL
+            # parsed_url = urlparse(url if url.startswith("http") else "http://" + url)
             
-            # Initialize features dictionary
-            features = {}
+            # # Initialize features dictionary
+            features = extract_features(url)
             
-            # Basic features
-            features['length_url'] = len(url)
-            features['length_hostname'] = len(parsed_url.hostname) if parsed_url.hostname else 0
+            # # Basic features
+            # features['length_url'] = len(url)
+            # features['length_hostname'] = len(parsed_url.hostname) if parsed_url.hostname else 0
             
-            # IP address presence
-            features['ip'] = 1 if re.match(r'^\d{1,3}(\.\d{1,3}){3}$', parsed_url.hostname) else 0
+            # # IP address presence
+            # features['ip'] = 1 if re.match(r'^\d{1,3}(\.\d{1,3}){3}$', parsed_url.hostname) else 0
             
-            # Character-based features
-            features['nb_dots'] = url.count('.')
-            features['nb_qm'] = url.count('?')
-            features['nb_eq'] = url.count('=')
-            features['nb_slash'] = url.count('/')
-            features['nb_www'] = 1 if 'www' in parsed_url.hostname else 0
+            # # Character-based features
+            # features['nb_dots'] = url.count('.')
+            # features['nb_qm'] = url.count('?')
+            # features['nb_eq'] = url.count('=')
+            # features['nb_slash'] = url.count('/')
+            # features['nb_www'] = 1 if 'www' in parsed_url.hostname else 0
             
-            # Digit ratio in URL and hostname
-            features['ratio_digits_url'] = sum(c.isdigit() for c in url) / len(url)
-            features['ratio_digits_host'] = sum(c.isdigit() for c in parsed_url.hostname) / len(parsed_url.hostname) if parsed_url.hostname else 0
+            # # Digit ratio in URL and hostname
+            # features['ratio_digits_url'] = sum(c.isdigit() for c in url) / len(url)
+            # features['ratio_digits_host'] = sum(c.isdigit() for c in parsed_url.hostname) / len(parsed_url.hostname) if parsed_url.hostname else 0
             
-            # TLD in subdomain (e.g., .com in subdomain)
-            features['tld_in_subdomain'] = 1 if re.search(r'\.(com|net|org|edu|gov)', parsed_url.hostname.split('.')[0]) else 0
+            # # TLD in subdomain (e.g., .com in subdomain)
+            # features['tld_in_subdomain'] = 1 if re.search(r'\.(com|net|org|edu|gov)', parsed_url.hostname.split('.')[0]) else 0
             
-            # Prefix-suffix presence
-            features['prefix_suffix'] = 1 if '-' in parsed_url.hostname else 0
+            # # Prefix-suffix presence
+            # features['prefix_suffix'] = 1 if '-' in parsed_url.hostname else 0
             
-            # Word length characteristics
-            subdomains = parsed_url.hostname.split('.') if parsed_url.hostname else []
-            features['shortest_word_host'] = min([len(word) for word in subdomains]) if subdomains else 0
-            features['longest_words_raw'] = max([len(word) for word in url.split('/')]) if '/' in url else len(url)
-            features['longest_word_path'] = max([len(word) for word in parsed_url.path.split('/')]) if parsed_url.path else 0
+            # # Word length characteristics
+            # subdomains = parsed_url.hostname.split('.') if parsed_url.hostname else []
+            # features['shortest_word_host'] = min([len(word) for word in subdomains]) if subdomains else 0
+            # features['longest_words_raw'] = max([len(word) for word in url.split('/')]) if '/' in url else len(url)
+            # features['longest_word_path'] = max([len(word) for word in parsed_url.path.split('/')]) if parsed_url.path else 0
             
-            # Dummy placeholders for external features
-            hyperlink_features = get_hyperlink_features(url)
-            features['phish_hints'] = 1 if 'phish' in url.lower() else 0
-            features['nb_hyperlinks'] = hyperlink_features['nb_hyperlinks']  # You'd need to scrape the page to get the actual count
-            features['ratio_intHyperlinks'] = hyperlink_features['ratio_intHyperlinks']  # Also requires scraping
+            # # Dummy placeholders for external features
+            # hyperlink_features = get_hyperlink_features(url)
+            # features['phish_hints'] = 1 if 'phish' in url.lower() else 0
+            # features['nb_hyperlinks'] = hyperlink_features['nb_hyperlinks']  # You'd need to scrape the page to get the actual count
+            # features['ratio_intHyperlinks'] = hyperlink_features['ratio_intHyperlinks']  # Also requires scraping
             
-            # Placeholder for other features that require external sources or more complex processing
-            features['empty_title'] = check_empty_title(url)
-            features['domain_in_title'] = check_domain_in_title(url)
-            features['domain_age'] = domain_age(url)
-            features['google_index'] = google_index(url)
-            features['page_rank'] = 0
-            print("features", features.values())
+            # # Placeholder for other features that require external sources or more complex processing
+            # features['empty_title'] = check_empty_title(url)
+            # features['domain_in_title'] = check_domain_in_title(url)
+            # features['domain_age'] = domain_age(url)
+            # features['google_index'] = google_index(url)
+            # features['page_rank'] = 0
+            # print("features", features.values())
             return pd.DataFrame(features, index=[0])
 
         except Exception as e:

@@ -10,3 +10,4 @@ python-dotenv==1.0.0
 python-whois
 googlesearch-python
 beautifulsoup4
+tldextract

@@ -5,7 +5,7 @@ from src.logger import logging
 
 def main():
     get_data = CustomData()
-    feature = get_data.get_data_as_data_frame("https://chatgpt.com")
+    feature = get_data.get_data_as_data_frame("https://whois.whoisxmlapi.com")
     predict = PredictPipeline()
     predicted_result = predict.predict(feature)
     print("feature", predicted_result)
