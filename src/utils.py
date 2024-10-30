@@ -32,7 +32,7 @@ def evaluate_models(X_train, y_train, X_test, y_test, models, param):
             model = list(models.values())[i]
             para = param[list(models.keys())[i]]
 
-            gs = GridSearchCV(model, para, cv=5, scoring='accuracy')
+            gs = GridSearchCV(model, para, cv=5, n_jobs=-1, scoring='accuracy')
             gs.fit(X_train,y_train)
 
             model.set_params(**gs.best_params_)
@@ -51,7 +51,21 @@ def evaluate_models(X_train, y_train, X_test, y_test, models, param):
             report[list(models.keys())[i]] = test_model_score
             
             check_model_performance[list(models.keys())[i]] = [train_model_score, test_model_score]
-        logging.info(f"All model score on both training and test dataset : {check_model_performance}")
+            logging.info(f"All model score on both training and test dataset : {check_model_performance}")
+            trained_model_file_path = os.path.join("archive", f"{list(models.keys())[i][0]}_model.pkl")
+            save_object(
+                file_path=trained_model_file_path,
+                obj = model
+            )
         return report
     except Exception as E:
         raise CustomException(E, sys)
+    
+
+def load_object(file_path):
+    try:
+        with open(file_path, "rb") as file_obj:
+            return pickle.load(file_obj)
+
+    except Exception as e:
+        raise CustomException(e, sys)

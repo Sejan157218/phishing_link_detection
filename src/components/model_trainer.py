@@ -8,6 +8,7 @@ from sklearn.metrics import r2_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from xgboost import XGBClassifier
+from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 
 from src.exception import CustomException
@@ -37,7 +38,9 @@ class ModelTrainer:
                 'Logistic Regression': LogisticRegression(),
                 'Random Forest': RandomForestClassifier(),
                 'Gradient Boosting': GradientBoostingClassifier(),
-                'KNN': KNeighborsClassifier()
+                'SVM': SVC(),
+                'KNN': KNeighborsClassifier(),
+                'XGBClassifier': XGBClassifier()
             }
 
             params={
@@ -47,21 +50,27 @@ class ModelTrainer:
                     'max_iter': [100, 200, 500]
                 },
                 'Random Forest': {
-                    'n_estimators': [100, 200, 300],
-                    'max_depth': [10, 20, 30],
-                    'min_samples_split': [2, 5, 10]
+                    'n_estimators': [100, 150],
+                    'max_depth': [10, 20],
+                    'min_samples_split': [2, 5]
                 },
                 'Gradient Boosting': {
-                    'n_estimators': [50, 100, 150],
-                    'learning_rate': [0.01, 0.1, 0.2],
-                    'max_depth': [3, 5, 7],
-                    'min_samples_split': [2, 5, 10],
-                    'min_samples_leaf': [1, 2, 4]
+                    'n_estimators': [100, 200],
+                    'learning_rate': [0.01, 0.1],
+                    'max_depth': [3, 5],
+                },
+                'SVM': {
+                    'C': [0.1, 1, 10],
+                    'kernel': ['linear', 'rbf']
                 },
                 'KNN': {
                     'n_neighbors': [3, 5, 7, 9],
-                    'weights': ['uniform', 'distance'],
                     'p': [1, 2]  # 1 for Manhattan, 2 for Euclidean
+                },
+                'XGBClassifier' : {
+                    'learning_rate': [0.01, 0.1, 0.2],
+                    'max_depth': [3, 5],
+                    'n_estimators': [100, 200]
                 }
                 
             }
