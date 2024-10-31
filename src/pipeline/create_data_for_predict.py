@@ -9,6 +9,7 @@ import tldextract
 import re
 import whois
 from datetime import datetime
+import os
 
 def url_length(url):
     return len(url) 
@@ -159,7 +160,7 @@ def page_rank(key, domain):
 
     url = 'https://openpagerank.com/api/v1.0/getPageRank?domains%5B0%5D=' + domain
     try:
-        request = requests.get(url, headers={'API-OPR':""})
+        request = requests.get(url, headers={'API-OPR': os.environ.get('PAGE_RANK_API')})
         result = request.json()
         result = result['response'][0]['page_rank_integer']
 
@@ -170,67 +171,78 @@ def page_rank(key, domain):
     except:
         return -1
     
-
-
-
+from concurrent.futures import ThreadPoolExecutor, TimeoutError
 class TimedOutExc(Exception):
     pass
-def deadline(timeout, *args):
-    def decorate(f):
-        def handler(signum, frame):
-            raise TimedOutExc()
 
-        def new_f(*args):
-            signal.signal(signal.SIGALRM, handler)
-            signal.alarm(timeout)
-            return f(*args)
-            signal.alarm(0)
-
-        new_f.__name__ = f.__name__
-        return new_f
-    return decorate
-
-@deadline(5)
-def is_URL_accessible(url):
-    #iurl = url
-    #parsed = urlparse(url)
-    #url = parsed.scheme+'://'+parsed.netloc
-    page = None
-    try:
-        page = requests.get(url, timeout=5)   
-    except:
-        parsed = urlparse(url)
-        url = parsed.scheme+'://'+parsed.netloc
-        if not parsed.netloc.startswith('www'):
-            url = parsed.scheme+'://www.'+parsed.netloc
+def is_URL_accessible(url, timeout=5):
+    def fetch_url(url):
+        # Main URL fetching logic
+        page = None
+        try:
+            page = requests.get(url, timeout=timeout)
+        except requests.RequestException:
+            # Retry with "www" prefix if the first attempt fails
+            parsed = urlparse(url)
+            url_with_www = parsed.scheme + '://www.' + parsed.netloc
             try:
-                page = requests.get(url, timeout=5)
-            except:
+                page = requests.get(url_with_www, timeout=timeout)
+            except requests.RequestException:
                 page = None
-                pass
-        # if not parsed.netloc.startswith('www'):
-        #     url = parsed.scheme+'://www.'+parsed.netloc
-        #     #iurl = iurl.replace('https://', 'https://www.')
-        #     try:
-        #         page = requests.get(url)
-        #     except:        
-        #         # url = 'http://'+parsed.netloc
-        #         # iurl = iurl.replace('https://', 'http://')
-        #         # try:
-        #         #     page = requests.get(url) 
-        #         # except:
-        #         #     if not parsed.netloc.startswith('www'):
-        #         #         url = parsed.scheme+'://www.'+parsed.netloc
-        #         #         iurl = iurl.replace('http://', 'http://www.')
-        #         #         try:
-        #         #             page = requests.get(url)
-        #         #         except:
-        #         #             pass
-        #         pass 
-    if page and page.status_code == 200 and page.content not in ["b''", "b' '"]:
-        return True, url, page
-    else:
-        return False, None, None
+
+        if page and page.status_code == 200 and page.content not in ["b''", "b' '"]:
+            return True, url, page
+        else:
+            return False, None, None
+
+    # Use ThreadPoolExecutor to handle the timeout
+    try:
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(fetch_url, url)
+            return future.result(timeout=timeout)
+    except TimeoutError:
+        raise TimedOutExc(f"Timed out after {timeout} seconds while trying to access {url}")
+
+
+# class TimedOutExc(Exception):
+#     pass
+# def deadline(timeout, *args):
+#     def decorate(f):
+#         def handler(signum, frame):
+#             raise TimedOutExc()
+
+#         def new_f(*args):
+#             signal.signal(signal.SIGALRM, handler)
+#             signal.alarm(timeout)
+#             return f(*args)
+#             signal.alarm(0)
+
+#         new_f.__name__ = f.__name__
+#         return new_f
+#     return decorate
+
+# @deadline(5)
+# def is_URL_accessible(url):
+#     #iurl = url
+#     #parsed = urlparse(url)
+#     #url = parsed.scheme+'://'+parsed.netloc
+#     page = None
+#     try:
+#         page = requests.get(url, timeout=5)   
+#     except:
+#         parsed = urlparse(url)
+#         url = parsed.scheme+'://'+parsed.netloc
+#         if not parsed.netloc.startswith('www'):
+#             url = parsed.scheme+'://www.'+parsed.netloc
+#             try:
+#                 page = requests.get(url, timeout=5)
+#             except:
+#                 page = None
+#                 pass 
+#     if page and page.status_code == 200 and page.content not in ["b''", "b' '"]:
+#         return True, url, page
+#     else:
+#         return False, None, None
     
 
 def get_domain(url):
