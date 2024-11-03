@@ -1,0 +1,71 @@
+<!-- {% load static %} -->
+<!doctype html>
+<html class="no-js" lang="en">
+
+    <head>
+        <!-- meta data -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+        <!--font-family-->
+		<link href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+        
+        <!-- title of site -->
+        <title>Phishing Link Detection</title>	
+        
+        <!--style.css-->
+        <!-- <link rel="stylesheet" href="{% static 'style.css' %}"> -->
+        <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+
+
+    </head>
+	
+	<body>
+
+		<!--welcome-hero start -->
+		<section id="home" class="welcome-hero">
+			<div class="container">
+				<div class="welcome-hero-txt">
+					<h2>best place to find and explore <br> that all you need </h2>
+					<p>
+						Find Best Place, Restaurant, Hotel, Real State and many more think in just One click 
+					</p>
+				</div>
+				<div class="welcome-hero-serch-box">
+					<div class="welcome-hero-form">
+						<div class="single-welcome-hero-form">
+							<h3>Link?</h3>
+							<form action="{% url 'predictresult' %}" method="post">
+                                {% csrf_token %}
+                                <div style="display:flex">
+                                    <input type="text" name="url" placeholder="Ex: https://www.youtube.com" />
+                                    <br/>
+                                    <!-- <input class="welcome-hero-btn" type="submit" value="search"> -->
+                                    <div class="welcome-hero-serch">
+                                        <button class="welcome-hero-btn">
+                                             search  <i data-feather="search"></i> 
+                                        </button>
+                                    </div>
+                                </div>
+
+							</form>
+			
+						</div>
+
+					</div>
+
+				</div>
+                 <!-- {% if predicted_result %} -->
+                <div class="welcome-hero-txt">
+					<h2>{{predicted_result}} </h2>
+				</div>
+                <!-- {% endif %} -->
+			</div>
+
+		</section>
+        
+    </body>
+	
+</html>

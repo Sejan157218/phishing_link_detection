@@ -1,0 +1,52 @@
+<!-- {% load static %} -->
+<!doctype html>
+<html class="no-js" lang="en">
+
+    <head>
+        <!-- meta data -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+        <!--font-family-->
+		<link href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+        
+        <!-- title of site -->
+        <title>Phishing Link Detection</title>	
+        
+        <!--style.css-->
+        <!-- <link rel="stylesheet" href="{% static 'style.css' %}"> -->
+        <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+
+
+    </head>
+	
+	<body>
+
+		<!--welcome-hero start -->
+		<section id="home" class="welcome-hero">
+			<div class="container">
+				<div class="welcome-hero-txt">
+                    {% if predicted_result %}
+                        {% if predicted_result == 1 %}
+                        <h2>This Link is Safe </h2>
+                        {% elif predicted_result == 0 %}
+                        <h2>This Link is Not Safe </h2>
+                        {% elif predicted_result == -1 %}
+                        <h2>Sorry Web scraping Access denied <br>Try another Link </h2>
+                        {% else %}
+                        <h2>{{predicted_result}} </h2>
+                        {% endif %}
+					
+                     {% endif %}
+                    <a  href="{% url 'home' %}"><button class="welcome-hero-btn">
+                        Back To Home </i> 
+				</div>
+			</div>
+
+		</section>
+        
+    </body>
+	
+</html>
