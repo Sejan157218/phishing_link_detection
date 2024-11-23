@@ -15,10 +15,10 @@ class PredictPipeline:
         try:
             model_path=os.path.join("archive","S_model.pkl")
             preprocessor_path=os.path.join('archive','preprocessor.pkl')
-            print("Before Loading")
+
             model=load_object(file_path=model_path)
             preprocessor=load_object(file_path=preprocessor_path)
-            print("After Loading")
+   
             data_scaled=preprocessor.transform(features)
             preds=model.predict(data_scaled)
             print("preds", preds)
@@ -36,8 +36,11 @@ class CustomData:
             
             # # Initialize features dictionary
             features = extract_features(url)
-            print("features", features)
+            print("features__________", features)
+            if features is None:
+                return None
             return pd.DataFrame(features, index=[0])
 
         except Exception as e:
+            print("e___________", e)
             raise CustomException(e, sys)

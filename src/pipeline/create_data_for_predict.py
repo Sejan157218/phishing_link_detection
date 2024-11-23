@@ -265,7 +265,7 @@ def extract_data_from_URL(hostname, content, domain, Href, Link, Anchor, Media, 
 
     # collect all external and internal hrefs from url
     for href in soup.find_all('a', href=True):
-        dots = [x.start(0) for x in re.finditer('\.', href['href'])]
+        dots = [x.start(0) for x in re.finditer(r'\.', href['href'])]
         if hostname in href['href'] or domain in href['href'] or len(dots) == 1 or not href['href'].startswith('http'):
             if "#" in href['href'] or "javascript" in href['href'].lower() or "mailto" in href['href'].lower():
                  Anchor['unsafe'].append(href['href']) 
@@ -337,7 +337,7 @@ def extract_data_from_URL(hostname, content, domain, Href, Link, Anchor, Media, 
 
     # collect all link tags
     for link in soup.findAll('link', href=True):
-        dots = [x.start(0) for x in re.finditer('\.', link['href'])]
+        dots = [x.start(0) for x in re.finditer(r'\.', link['href'])]
         if hostname in link['href'] or domain in link['href'] or len(dots) == 1 or not link['href'].startswith('http'):
             if not link['href'].startswith('http'):
                 if not link['href'].startswith('/'):
@@ -365,18 +365,21 @@ def extract_data_from_URL(hostname, content, domain, Href, Link, Anchor, Media, 
             
     # collect all css
     for link in soup.find_all('link', rel='stylesheet'):
-        dots = [x.start(0) for x in re.finditer('\.', link['href'])]
-        if hostname in link['href'] or domain in link['href'] or len(dots) == 1 or not link['href'].startswith('http'):
-            if not link['href'].startswith('http'):
-                if not link['href'].startswith('/'):
-                    CSS['internals'].append(hostname+'/'+link['href']) 
-                elif link['href'] in Null_format:
-                    CSS['null'].append(link['href'])  
-                else:
-                    CSS['internals'].append(hostname+link['href'])   
-        else:
-            CSS['externals'].append(link['href'])
-    
+
+        try:
+            dots = [x.start(0) for x in re.finditer(r'\.', link['href'])]
+            if hostname in link['href'] or domain in link['href'] or len(dots) == 1 or not link['href'].startswith('http'):
+                if not link['href'].startswith('http'):
+                    if not link['href'].startswith('/'):
+                        CSS['internals'].append(hostname+'/'+link['href']) 
+                    elif link['href'] in Null_format:
+                        CSS['null'].append(link['href'])  
+                    else:
+                        CSS['internals'].append(hostname+link['href'])   
+            else:
+                CSS['externals'].append(link['href'])
+        except:
+            continue
     for style in soup.find_all('style', type='text/css'):
         try: 
             start = str(style[0]).index('@import url(')
