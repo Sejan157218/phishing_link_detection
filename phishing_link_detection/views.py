@@ -22,9 +22,9 @@ class PredictResult(TemplateView):
             predict = PredictPipeline()
             predicted_result = predict.predict(feature)
             if predicted_result==0:
-                result = "This link or website is Not Save"
+                result = "This link or website is Not Safe"
             else:
-                result = "This link or website is Save"
+                result = "This link or website is Safe"
             # print("featursssse", predicted_result)
             return render(request,'result.html', {"predicted_result": result})
         else:
@@ -48,9 +48,9 @@ class PredictApi(APIView):
                 predict = PredictPipeline()
                 predicted_result = predict.predict(feature)
                 if predicted_result==0:
-                    result = "This link or website is Not Save"
+                    result = "This link or website is Not Safe"
                 else:
-                    result = "This link or website is Save"  
+                    result = "This link or website is Safe"  
                 return Response({"status":"ok","message": result}, status=status.HTTP_200_OK)
             else:
                 result = "Please provide a url"
