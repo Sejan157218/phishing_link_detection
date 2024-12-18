@@ -1,5 +1,5 @@
 from src.logger import logging
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, accuracy_score, precision_score, recall_score, f1_score,mean_squared_error, classification_report
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
@@ -108,9 +108,30 @@ class ShowAccuracy:
 
                 report[model_name] = [train_model_score,test_model_score]
 
+                # report for test data
+                
+                mse = mean_squared_error(y_test, y_test_pred)
+                rmse = np.sqrt(mse)
+
+                test_accuracy_score = accuracy_score(y_test, y_test_pred)
+                test_precision_score = precision_score(y_test, y_test_pred)
+                test_recall_score = recall_score(y_test, y_test_pred)
+                test_f1_score = f1_score(y_test, y_test_pred)
+
                 model_performance_in_percentage[model_name] = [train_model_score_percentage, test_model_score_percentage]
-                logging.info(f"{model_name} : train accuracy {train_model_score}, train accuracy {test_model_score }")
-                logging.info(f"{model_name} in percentage : train accuracy {train_model_score_percentage} %, train accuracy {test_model_score_percentage } %")
+
+                logging.info(f"---------------------{model_name}-------------------")
+                logging.info(f"Mean Squared Error (MSE): {mse}")
+                logging.info(f"Root Mean Squared Error (RMSE): {rmse}")
+                logging.info(f"R2 score Train: {train_model_score}, Percentage : {train_model_score_percentage}%")
+                logging.info(f"R2 score Test: {test_model_score}, Percentage : {test_model_score_percentage}%")
+                logging.info(f"Accuracy: {test_accuracy_score}, Percentage : {test_accuracy_score * 100 :.2f}%")
+                logging.info(f"Precision: {test_precision_score}, Percentage : {test_precision_score * 100 :.2f}%")
+                logging.info(f"Recall: {test_recall_score}, Percentage : {test_recall_score * 100 :.2f}%")
+                logging.info(f"F1 Score: {test_f1_score}, Percentage : {test_f1_score * 100 :.2f}%")
+                logging.info(f"-----------------------------------------------------------------")
+
+            
             logging.info(f"All model score on both training and test dataset : {report}")
             logging.info(f"All model score on both training and test dataset in percentage: {model_performance_in_percentage}")
 
