@@ -13,3 +13,5 @@ googlesearch-python
 beautifulsoup4
 tldextract
 django-cors-headers
+tensorflow
+transformers

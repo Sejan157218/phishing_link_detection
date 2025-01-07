@@ -25,6 +25,7 @@ class DataIngestion:
         try:
             
             df = pd.read_csv('archive/dataset_phishing.csv')
+            df = df.sample(frac=1).reset_index(drop=True)
 
             logging.info("read the dataset as dataframe")
 

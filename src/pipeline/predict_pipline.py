@@ -13,7 +13,7 @@ class PredictPipeline:
 
     def predict(self,features):
         try:
-            model_path=os.path.join("archive","S_model.pkl")
+            model_path=os.path.join("archive","ANN_model.pkl")
             preprocessor_path=os.path.join('archive','preprocessor.pkl')
 
             model=load_object(file_path=model_path)
@@ -21,8 +21,9 @@ class PredictPipeline:
    
             data_scaled=preprocessor.transform(features)
             preds=model.predict(data_scaled)
+            preds = (preds > 0.5).astype(int)
             print("preds", preds)
-            return preds[0]
+            return preds[0][0]
         
         except Exception as e:
             raise CustomException(e,sys)

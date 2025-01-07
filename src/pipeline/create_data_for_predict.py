@@ -175,7 +175,7 @@ from concurrent.futures import ThreadPoolExecutor, TimeoutError
 class TimedOutExc(Exception):
     pass
 
-def is_URL_accessible(url, timeout=5):
+def is_URL_accessible(url, timeout=30):
     def fetch_url(url):
         # Main URL fetching logic
         page = None

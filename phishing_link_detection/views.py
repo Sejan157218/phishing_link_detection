@@ -14,10 +14,14 @@ class PredictResult(TemplateView):
     template_name = 'result.html'
     def post(self, request):
         url  = request.POST['url']
+        print("url________", url)
         result = -1
         if url:
             get_data = CustomData()
             feature = get_data.get_data_as_data_frame(url)
+            if feature is None:
+                result = "Website not allowing web scraping"
+                return render(request,'result.html', {"predicted_result": result})
             # print("feature", feature)
             predict = PredictPipeline()
             predicted_result = predict.predict(feature)
